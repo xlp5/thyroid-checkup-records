@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>甲状腺相关检查记录报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+        }
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            margin-right: 10px;
+            border-radius: 2px;
+        }
+        .patient-info {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .info-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+            min-width: 100px;
+            font-size: 14px;
+        }
+        .info-value {
+            color: #212529;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            position: relative;
+        }
+        .table-container {
+            margin: 0 -5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+            min-width: 500px;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        td {
+            padding: 10px 6px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        tr:hover {
+            background: #e3f2fd;
+        }
+        .surgery-row {
+            background: #fff3cd !important;
+            font-weight: bold;
+        }
+        .surgery-row td {
+            color: #856404;
+        }
+        /* 冻结首列 */
+        th:first-child,
+        td:first-child {
+            position: sticky;
+            left: 0;
+            background: inherit;
+            z-index: 5;
+            min-width: 35px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        th:first-child {
+            z-index: 15;
+            background: #667eea;
+        }
+        tr:nth-child(even) td:first-child {
+            background: #f8f9fa;
+        }
+        tr:nth-child(odd) td:first-child {
+            background: white;
+        }
+        tr.surgery-row td:first-child {
+            background: #fff3cd !important;
+        }
+        tr:hover td:first-child {
+            background: #e3f2fd;
+        }
+        /* 第二个表格列宽更小 */
+        .table-second th:first-child,
+        .table-second td:first-child {
+            min-width: 25px;
+        }
+        .result-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .result-value {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .ref-range {
+            font-size: 10px;
+            color: #6c757d;
+        }
+        .arrow-up {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .arrow-down {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .normal {
+            color: #212529;
+        }
+        .highlight-high {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .highlight-low {
+            background: #d4edda;
+            color: #155724;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .chart-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .chart-container img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin: 20px 0 15px;
+            text-align: center;
+        }
+        .notes {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+        }
+        .notes h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .notes ul {
+            padding-left: 20px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #495057;
+        }
+        .notes li {
+            margin-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        .badge-high {
+            background: #dc3545;
+            color: white;
+        }
+        .badge-low {
+            background: #28a745;
+            color: white;
+        }
+        .unit-note {
+            font-size: 11px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .swipe-hint {
+            font-size: 13px;
+            color: #667eea;
+            text-align: center;
+            margin-top: 12px;
+            padding: 10px;
+            background: linear-gradient(90deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 8px;
+            font-weight: 600;
+            border: 1px dashed #667eea;
+        }
+        /* 转置表格样式 */
+        .transposed-table {
+            table-layout: auto;
+        }
+        .transposed-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            min-width: 90px;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+        .transposed-table th:first-child {
+            min-width: 85px;
+            width: 85px;
+        }
+        .transposed-table th:not(:first-child) {
+            min-width: 75px;
+            width: 75px;
+        }
+        .transposed-table td {
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 13px;
+            min-width: 75px;
+            width: 75px;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.3;
+        }
+        .transposed-table td:first-child {
+            min-width: 85px;
+            width: 85px;
+        }
+        .transposed-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        /* 可点击隐藏的表头样式 */
+        .toggle-column {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .toggle-column:hover {
+            background: #5a6fd6;
+        }
+        .toggle-column.hidden-col {
+            background: #4a5568;
+            opacity: 0.6;
+            max-width: 30px;
+            min-width: 30px;
+            width: 30px;
+            padding: 8px 2px;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 0;
+            color: transparent;
+        }
+        .toggle-column.hidden-col::before {
+            content: "—";
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+        }
+        /* 隐藏的列 - 最小化列宽并完全隐藏内容 */
+        .col-hidden {
+            max-width: 0;
+            min-width: 0;
+            width: 0;
+            padding: 6px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 0;
+            color: transparent;
+            border: none;
+            opacity: 0;
+        }
+        /* 可点击隐藏的行首单元格样式 */
+        .toggle-row {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .toggle-row:hover {
+            background: #f0f0f0;
+        }
+        .toggle-row.hidden-row {
+            background: #e0e0e0;
+            opacity: 0.6;
+        }
+        .toggle-row.hidden-row .indicator-name {
+            display: none;
+        }
+        .toggle-row.hidden-row::before {
+            content: "—";
+            font-size: 14px;
+            color: rgba(0,0,0,0.5);
+        }
+        /* 隐藏的行 - 隐藏数据列但保留行首单元格（单击效果） */
+        tr.row-hidden td:not(:first-child) {
+            display: none;
+        }
+        tr.row-hidden td:first-child {
+            background: #e0e0e0;
+            text-align: center;
+        }
+        /* 完全隐藏的行 - 双击效果 */
+        tr.row-fully-hidden {
+            display: none !important;
+        }
+        /* 完全隐藏的列 - 双击效果（不占用空间，相邻列靠拢） */
+        th.col-fully-hidden {
+            display: none !important;
+        }
+        td.col-fully-hidden-cell {
+            display: none !important;
+        }
+        /* 悬浮表头样式增强 */
+        .transposed-table th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .transposed-table th:first-child {
+            z-index: 25;
+        }
+        .indicator-name {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            text-align: center;
+        }
+        .indicator-abbr {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .indicator-abbr.vitd {
+            font-size: 12px;
+        }
+        .indicator-unit {
+            font-weight: normal;
+            font-size: 14px;
+        }
+        .indicator-label {
+            display: inline;
+            white-space: nowrap;
+        }
+        .indicator-cn {
+            font-size: 10px;
+            color: #666;
+            line-height: 1.1;
+            border-bottom: 1px solid #e9ecef;
+            min-width: 0;
+        }
+        .indicator-cn.wrap-text {
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .transposed-table .result-value {
+            font-size: 14px;
+            line-height: 1.3;
+        }
+        tr[data-row-index="4"] .result-value {
+            font-size: 12px;
+        }
+        .transposed-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .transposed-table tr:hover {
+            background: #e3f2fd;
+        }
+        .links-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .links-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .links-card a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            font-size: 14px;
+        }
+        .links-card a:last-child {
+            border-bottom: none;
+        }
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 18px;
+            }
+            .section-title {
+                font-size: 16px;
+            }
+            th, td {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            th:first-child,
+            td:first-child {
+                min-width: 0;
+                font-size: 10px;
+            }
+            .info-label {
+                min-width: 80px;
+                font-size: 13px;
+            }
+            .info-value {
+                font-size: 13px;
+            }
+            .transposed-table th {
+                min-width: 68px !important;
+                width: 68px !important;
+                font-size: 10px !important;
+                padding: 5px 1px;
+            }
+            .transposed-table th:first-child {
+                min-width: 72px !important;
+                width: 72px !important;
+                padding: 4px 0 !important;
+            }
+            .transposed-table th:not(:first-child) {
+                min-width: 68px !important;
+                width: 68px !important;
+            }
+            .transposed-table td {
+                font-size: 9px;
+                padding: 2px 1px !important;
+                line-height: 1.3;
+                min-width: 68px !important;
+                width: 68px !important;
+                min-height: 24px !important;
+                height: auto !important;
+            }
+            .transposed-table td:first-child {
+                min-width: 72px !important;
+                width: 72px !important;
+                padding: 1px 0 !important;
+            }
+            .indicator-abbr.vitd {
+                font-size: 11px !important;
+            }
+            .transposed-table {
+                min-width: 0 !important;
+                width: auto !important;
+            }
+            .table-wrapper {
+                margin: 0;
+                padding: 0;
+            }
+            .table-container {
+                margin: 0;
+            }
+            .transposed-table .result-value {
+                font-size: 11px;
+                line-height: 1.4;
+            }
+            tr[data-row-index="4"] .result-value {
+                font-size: 10px;
+            }
+            tr[data-row-index="1"] td,
+            tr[data-row-index="2"] td,
+            tr[data-row-index="18"] td,
+            tr[data-row-index="19"] td {
+                height: 36px !important;
+                min-height: 36px !important;
+            }
+            .indicator-name {
+                gap: 1px;
+            }
+            .indicator-header {
+                font-size: 11px !important;
+            }
+            .indicator-abbr {
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+            }
+            .indicator-abbr.vitd {
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+            }
+            .indicator-unit {
+                font-weight: normal !important;
+                font-size: 11px !important;
+                line-height: 1.2 !important;
+            }
+            .indicator-label {
+                display: inline !important;
+                white-space: nowrap !important;
+            }
+            .indicator-cn {
+                font-size: 7px !important;
+                line-height: 1.2 !important;
+                min-width: 0;
+            }
+            .transposed-table tr {
+                height: auto !important;
+            }
+            .transposed-table td:first-child .indicator-name {
+                gap: 1px;
+            }
+            .indicator-cn.wrap-text {
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                word-break: break-all !important;
+                line-height: 1.1 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🏥 甲状腺相关检查记录报告</h1>
+            <p>甲状腺术后随访监测</p>
+        </div>
+
+        <!-- 患者信息 -->
+        <div class="card">
+            <div class="section-title">患者基本信息</div>
+            <div class="patient-info">
+                <div class="info-item">
+                    <span class="info-label">手术日期</span>
+                    <span class="info-value">2026-03-21</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">手术方式</span>
+                    <span class="info-value">右侧甲状腺伴峡部切除 + 右侧中央区清扫 + 右下甲状旁腺自体移植</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">肿瘤类型</span>
+                    <span class="info-value">甲状腺乳头状癌经典型</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">病理分期</span>
+                    <span class="info-value">pT1aN0Mx</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">用药规格</span>
+                    <span class="info-value">优甲乐（左甲状腺素钠片）50μg/片</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 超声复查报告 -->
+        <div class="card">
+            <div class="section-title">超声复查报告</div>
+            <div class="info-item">
+                <span class="info-label">复查医院</span>
+                <span class="info-value">待上传超声检查报告后自动识别提取</span>
+            </div>
+                <div class="info-item">
+                    <span class="info-label">复查日期</span>
+                    <span class="info-value">2026-09-20（术后6月）（待上传超声检查报告后自动识别提取）</span>
+                </div>
+            <div class="info-item">
+                <span class="info-label">超声所见</span>
+                <span class="info-value">（超声检查所见内容待上传后自动提取）</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">超声提示</span>
+                <span class="info-value">（超声诊断结果待上传后自动提取）</span>
+            </div>
+        </div>
+
+        <!-- 主要检验指标 -->
+        <div class="card">
+            <div class="section-title">日均服药量和TSH、Tg、TgAb、TPOAb检验记录</div>
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间节点/日期</th>
+                                <th>优甲乐<br>(片/日)</th>
+                                <th>TSH<br>(μIU/mL)</th>
+                                <th>Tg<br>(ng/mL)</th>
+                                <th>TgAb<br>(IU/mL)</th>
+                                <th>TPOAb<br>(IU/mL)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>术前3个月<br>2025-12-21</td>
+                                <td>0</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.97</span>
+                                        <span class="ref-range">0.3-4.5</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-high">477 ↑</span>
+                                        <span class="ref-range">&lt;95</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.00</span>
+                                        <span class="ref-range">&lt;10</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>术前3个月<br>2025-12-23</td>
+                                <td>0</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.76</span>
+                                        <span class="ref-range">0.35-4.94</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-low">0.47 ↓</span>
+                                        <span class="ref-range">3.5-77</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-high">139.75 ↑</span>
+                                        <span class="ref-range">&lt;4.11</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">0.92</span>
+                                        <span class="ref-range">&lt;5.61</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>术前1日<br>2026-03-20</td>
+                                <td>0</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">2.38</span>
+                                        <span class="ref-range">0.35-4.94</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-low">0.52 ↓</span>
+                                        <span class="ref-range">1.15-35</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-high">201.47 ↑</span>
+                                        <span class="ref-range">&lt;4.11</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.08</span>
+                                        <span class="ref-range">&lt;5.61</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="surgery-row">
+                                <td>🔪 手术日<br>2026-03-21</td>
+                                <td>0</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>术后2日<br>2026-03-23</td>
+                                <td>1</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>术后1个月<br>2026-04-22</td>
+                                <td>1</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.50</span>
+                                        <span class="ref-range">0.3-4.5</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-high">209.00 ↑</span>
+                                        <span class="ref-range">&lt;95</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">0.35</span>
+                                        <span class="ref-range">&lt;10</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="swipe-hint">
+                👉 向右滑动可查看更多指标数据
+            </div>
+            <div class="unit-note">
+                💡 <b>图例说明：</b>
+                <span class="highlight-high">红色 ↑</span> 表示高于参考值 &nbsp;
+                <span class="highlight-low">绿色 ↓</span> 表示低于参考值 &nbsp;
+                | 首列已冻结，左右滑动时保持可见
+            </div>
+        </div>
+
+        <!-- 甲状腺激素 -->
+        <div class="card">
+            <div class="section-title">FT3、FT4、T3、T4检验记录</div>
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table class="table-second">
+                        <thead>
+                            <tr>
+                                <th>时间节点/日期</th>
+                                <th>FT3<br>(pmol/L)</th>
+                                <th>FT4<br>(pmol/L)</th>
+                                <th>T3<br>(nmol/L)</th>
+                                <th>T4<br>(nmol/L)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>术前3个月<br>2025-12-21</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">4.62</span>
+                                        <span class="ref-range">3.08-6.47</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">17.40</span>
+                                        <span class="ref-range">11.61-22.58</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>术前3个月<br>2025-12-23</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">3.80</span>
+                                        <span class="ref-range">2.43-6.01</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">9.75</span>
+                                        <span class="ref-range">9.01-19.04</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.14</span>
+                                        <span class="ref-range">0.54-2.96</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-low">56.44 ↓</span>
+                                        <span class="ref-range">62.67-150.84</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>术前1日<br>2026-03-20</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">5.10</span>
+                                        <span class="ref-range">2.6-5.7</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">12.61</span>
+                                        <span class="ref-range">9.01-19.05</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">1.41</span>
+                                        <span class="ref-range">0.98-2.33</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">67.05</span>
+                                        <span class="ref-range">62.67-150.84</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>术后1个月<br>2026-04-22</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">4.04</span>
+                                        <span class="ref-range">3.08-6.47</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value normal">16.90</span>
+                                        <span class="ref-range">11.61-22.58</span>
+                                    </div>
+                                </td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="swipe-hint">
+                👉 向右滑动可查看更多指标数据
+            </div>
+        </div>
+
+        <!-- 25-羟基维生素D检验记录 -->
+        <div class="card">
+            <div class="section-title">25-羟基维生素D检验记录</div>
+            <div class="table-wrapper">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>时间节点/日期</th>
+                                <th>25-羟基维生素D2<br>(ng/mL)</th>
+                                <th>25-羟基维生素D3<br>(ng/mL)</th>
+                                <th>25-羟基维生素D<br>(ng/mL)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="surgery-row">
+                                <td>🔪 手术日<br>2026-03-21</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>—</td>
+                            </tr>
+                            <tr>
+                                <td>术后当日<br>2026-03-21</td>
+                                <td>1.33</td>
+                                <td>12.30</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-low">13.63 ↓</span>
+                                        <span class="ref-range">&lt;12缺乏;12-20不足;≥20正常</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>术后1个月<br>2026-04-22</td>
+                                <td>—</td>
+                                <td>—</td>
+                                <td>
+                                    <div class="result-cell">
+                                        <span class="result-value highlight-low">26.63 ↓</span>
+                                        <span class="ref-range">&gt;30</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="swipe-hint">
+                👉 向右滑动可查看更多指标数据
+            </div>
+        </div>
+
+        <!-- 趋势图1 -->
+        <div class="card">
+            <div class="chart-title">📊 图1：优甲乐日均服药量与TSH趋势变化</div>
+            <div class="chart-container">
+                <img src="图1_优甲乐与TSH趋势图.png" alt="优甲乐与TSH趋势图">
+            </div>
+            <div class="notes">
+                <h4>📌 图表解读</h4>
+                <ul>
+                    <li><b>左轴（蓝色）</b>：TSH（促甲状腺激素），浅蓝色柱状表示参考区间</li>
+                    <li><b>右轴（橙色）</b>：优甲乐日均服药量（片）</li>
+                    <li>术前TSH均在正常范围内（1.97→1.76→2.38）</li>
+                    <li>术后常规起始剂量为1片/日（50μg）</li>
+                    <li>术后1个月TSH降至1.50μIU/mL，仍在正常范围内，优甲乐维持1片/日</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 趋势图2 -->
+        <div class="card">
+            <div class="chart-title">📊 图2：Tg、TgAb、TPOAb趋势变化</div>
+            <div class="chart-container">
+                <img src="图2_Tg_TgAb_TPOAb趋势图.png" alt="Tg_TgAb_TPOAb趋势图">
+            </div>
+            <div class="notes">
+                <h4>📌 图表解读</h4>
+                <ul>
+                    <li><b>上坐标系 - Tg（绿色）</b>：甲状腺球蛋白，参考区间显示为浅绿色柱状</li>
+                    <li>Tg术前低于参考下限（0.47→0.52），可能与抗体干扰有关</li>
+                    <li><b>下坐标系 - TgAb（红色左轴）+ TPOAb（紫色右轴）</b></li>
+                    <li>TgAb显著高于正常（477→139.75→201.47→209.00），提示自身免疫反应</li>
+                    <li>TPOAb始终在正常范围内（1.00→0.92→1.08→0.35）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 趋势图3 -->
+        <div class="card">
+            <div class="chart-title">📊 图3：FT3、FT4、T3、T4趋势变化</div>
+            <div class="chart-container">
+                <img src="图3_FT3_FT4_T3_T4趋势图.png" alt="FT3_FT4_T3_T4趋势图">
+            </div>
+            <div class="notes">
+                <h4>📌 图表解读</h4>
+                <ul>
+                    <li><b>上坐标系 - FT3（蓝色左轴）+ FT4（青色右轴）</b></li>
+                    <li>FT3/FT4术前先降后升，均在正常范围内</li>
+                    <li>术后1个月FT3为4.04pmol/L，FT4为16.90pmol/L，均在正常范围内</li>
+                    <li><b>下坐标系 - T3（橙色左轴）+ T4（洋红色右轴）</b></li>
+                    <li>T3正常范围（1.14→1.41）</li>
+                    <li>T4（nmol/L）：瑞金医院略低于参考下限（56.44↓），邵逸夫术前在正常范围（67.05）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 生化检验记录汇总（转置表格） -->
+        <div class="card">
+            <div class="section-title">生化检验记录汇总</div>
+            <div class="table-wrapper" style="max-height: 80vh; overflow-y: auto;">
+                <div class="table-container">
+                    <table class="transposed-table" id="biochemistryTable">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;" class="indicator-header">指标（单位）</th>
+                                <th style="text-align:center;" class="toggle-column" data-col-index="1" onclick="toggleColumn(1)">术前3月<br>2025-12-21</th>
+                                <th style="text-align:center;" class="toggle-column" data-col-index="2" onclick="toggleColumn(2)">术前3月<br>2025-12-23</th>
+                                <th style="text-align:center;" class="toggle-column" data-col-index="3" onclick="toggleColumn(3)">术前1日<br>2026-03-20</th>
+                                <th style="text-align:center;" class="toggle-column" data-col-index="4" onclick="toggleColumn(4)">术后当日<br>2026-03-21</th>
+                                <th style="text-align:center;" class="toggle-column" data-col-index="6" onclick="toggleColumn(6)">术后1月<br>2026-04-22</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-row-index="1">
+                                <td class="toggle-row" onclick="toggleRow(1)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">优甲乐</span><span class="indicator-unit"> (片/日)</span></span><span class="indicator-cn">左甲状腺素钠片</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">0</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">0</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">0</span></div></td>
+                                <td data-col-index="4"><div class="result-cell"><span class="result-value normal">0</span></div></td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">1</span></div></td>
+                            </tr>
+                            <tr data-row-index="2">
+                                <td class="toggle-row" onclick="toggleRow(2)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TSH</span><span class="indicator-unit"> (μIU/mL)</span></span><span class="indicator-cn">促甲状腺激素</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">1.97</span><span class="ref-range">0.3-4.5</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">1.76</span><span class="ref-range">0.35-4.94</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">2.38</span><span class="ref-range">0.35-4.94</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">1.50</span><span class="ref-range">0.3-4.5</span></div></td>
+                            </tr>
+                            <tr data-row-index="3">
+                                <td class="toggle-row" onclick="toggleRow(3)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">Tg</span><span class="indicator-unit"> (ng/mL)</span></span><span class="indicator-cn">甲状腺球蛋白</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value highlight-low">0.47 ↓</span><span class="ref-range">3.5-77</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value highlight-low">0.52 ↓</span><span class="ref-range">1.15-35</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="4">
+                                <td class="toggle-row" onclick="toggleRow(4)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TgAb</span><span class="indicator-unit"> (IU/mL)</span></span><span class="indicator-cn">甲状腺球蛋白抗体</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value highlight-high">477.00 ↑</span><span class="ref-range">0-95</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value highlight-high">139.75 ↑</span><span class="ref-range">0-4.11</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value highlight-high">201.47 ↑</span><span class="ref-range">0-4.11</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value highlight-high">209.00 ↑</span><span class="ref-range">0-95</span></div></td>
+                            </tr>
+                            <tr data-row-index="5">
+                                <td class="toggle-row" onclick="toggleRow(5)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TPOAb</span><span class="indicator-unit"> (IU/mL)</span></span><span class="indicator-cn">甲状腺过氧化物酶抗体</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">1.00</span><span class="ref-range">0-10</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">0.92</span><span class="ref-range">0-5.61</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">1.08</span><span class="ref-range">0-5.61</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">0.35</span><span class="ref-range">0-10</span></div></td>
+                            </tr>
+                            <tr data-row-index="6">
+                                <td class="toggle-row" onclick="toggleRow(6)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">FT3</span><span class="indicator-unit"> (pmol/L)</span></span><span class="indicator-cn">游离三碘甲状腺原氨酸</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">4.62</span><span class="ref-range">3.08-6.47</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">3.80</span><span class="ref-range">2.43-6.01</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">5.10</span><span class="ref-range">2.6-5.7</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">4.04</span><span class="ref-range">3.08-6.47</span></div></td>
+                            </tr>
+                            <tr data-row-index="7">
+                                <td class="toggle-row" onclick="toggleRow(7)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">FT4</span><span class="indicator-unit"> (pmol/L)</span></span><span class="indicator-cn">游离甲状腺素</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">17.40</span><span class="ref-range">11.61-22.58</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">9.75</span><span class="ref-range">9.01-19.04</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">12.61</span><span class="ref-range">9.01-19.05</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">16.90</span><span class="ref-range">11.61-22.58</span></div></td>
+                            </tr>
+                            <tr data-row-index="8">
+                                <td class="toggle-row" onclick="toggleRow(8)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">T3</span><span class="indicator-unit"> (nmol/L)</span></span><span class="indicator-cn">三碘甲状腺原氨酸</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">1.14</span><span class="ref-range">0.54-2.96</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">1.41</span><span class="ref-range">0.98-2.33</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="9">
+                                <td class="toggle-row" onclick="toggleRow(9)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">T4</span><span class="indicator-unit"> (nmol/L)</span></span><span class="indicator-cn">甲状腺素</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value highlight-low">56.44 ↓</span><span class="ref-range">62.67-150.84</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">67.05</span><span class="ref-range">62.67-150.84</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="10">
+                                <td class="toggle-row" onclick="toggleRow(10)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">PTH</span><span class="indicator-unit"> (ng/L)</span></span><span class="indicator-cn">甲状旁腺素</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">39.70</span><span class="ref-range">15.0-65.0</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">43.60</span><span class="ref-range">15.0-65.0</span></div></td>
+                            </tr>
+                            <tr data-row-index="11">
+                                <td class="toggle-row" onclick="toggleRow(11)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">CT</span><span class="indicator-unit"> (pg/mL)</span></span><span class="indicator-cn">降钙素</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">1.41</span><span class="ref-range">0-10</span></div></td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">2.10</span><span class="ref-range">0-9.2</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="12">
+                                <td class="toggle-row" onclick="toggleRow(12)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TRAb</span><span class="indicator-unit"> (IU/L)</span></span><span class="indicator-cn">促甲状腺受体抗体</span></div></td>
+                                <td data-col-index="1"><div class="result-cell"><span class="result-value normal">&lt;0.25</span><span class="ref-range">0-1.5</span></div></td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">0.80</span><span class="ref-range">0-1.75</span></div></td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">&lt;0.25</span><span class="ref-range">0-1.5</span></div></td>
+                            </tr>
+                            <tr data-row-index="13">
+                                <td class="toggle-row" onclick="toggleRow(13)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TBG</span><span class="indicator-unit"> (ng/mL)</span></span><span class="indicator-cn">甲状腺结合球蛋白</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value highlight-low">7.00 ↓</span><span class="ref-range">14.0-31.0</span></div></td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="14">
+                                <td class="toggle-row" onclick="toggleRow(14)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">TSI</span><span class="indicator-unit"> (IU/L)</span></span><span class="indicator-cn wrap-text">促甲状腺激素受体兴奋性抗体</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">&lt;0.10</span><span class="ref-range">0-0.55</span></div></td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="15">
+                                <td class="toggle-row" onclick="toggleRow(15)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">rT3</span><span class="indicator-unit"> (ng/dL)</span></span><span class="indicator-cn">反三碘甲状腺原氨酸</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2"><div class="result-cell"><span class="result-value normal">44.36</span><span class="ref-range">20.0-95.0</span></div></td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="16">
+                                <td class="toggle-row" onclick="toggleRow(16)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">Ca</span><span class="indicator-unit"> (mmol/L)</span></span><span class="indicator-cn">钙</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">2.47</span><span class="ref-range">2.11-2.52</span></div></td>
+                                <td data-col-index="4">—</td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value highlight-low">2.22 ↓</span><span class="ref-range">2.25-2.67</span></div></td>
+                            </tr>
+                            <tr data-row-index="17">
+                                <td class="toggle-row" onclick="toggleRow(17)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr">K</span><span class="indicator-unit"> (mmol/L)</span></span><span class="indicator-cn">钾</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3"><div class="result-cell"><span class="result-value normal">4.09</span><span class="ref-range">3.50-5.30</span></div></td>
+                                <td data-col-index="4"><div class="result-cell"><span class="result-value normal">3.61</span><span class="ref-range">3.50-5.30</span></div></td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value normal">4.33</span><span class="ref-range">3.50-5.30</span></div></td>
+                            </tr>
+                            <tr data-row-index="18">
+                                <td class="toggle-row" onclick="toggleRow(18)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr vitd">25(OH)D2</span><span class="indicator-unit">(ng/mL)</span></span><span class="indicator-cn">25-羟基维生素D2</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4"><div class="result-cell"><span class="result-value normal">1.33</span></div></td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="19">
+                                <td class="toggle-row" onclick="toggleRow(19)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr vitd">25(OH)D3</span><span class="indicator-unit">(ng/mL)</span></span><span class="indicator-cn">25-羟基维生素D3</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4"><div class="result-cell"><span class="result-value normal">12.30</span></div></td>
+                                <td data-col-index="6">—</td>
+                            </tr>
+                            <tr data-row-index="20">
+                                <td class="toggle-row" onclick="toggleRow(20)"><div class="indicator-name"><span class="indicator-label"><span class="indicator-abbr vitd">25(OH)D</span><span class="indicator-unit">(ng/mL)</span></span><span class="indicator-cn">25-羟基维生素D</span></div></td>
+                                <td data-col-index="1">—</td>
+                                <td data-col-index="2">—</td>
+                                <td data-col-index="3">—</td>
+                                <td data-col-index="4"><div class="result-cell"><span class="result-value highlight-low">13.63 ↓</span><span class="ref-range">&lt;12缺乏;12-20不足;≥20正常</span></div></td>
+                                <td data-col-index="6"><div class="result-cell"><span class="result-value highlight-low">26.63 ↓</span><span class="ref-range">&gt;30</span></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="unit-note">
+                💡 <b>图例说明：</b>
+                <span class="highlight-high">红色 ↑</span> 表示高于参考值 &nbsp;
+                <span class="highlight-low">绿色 ↓</span> 表示低于参考值
+            </div>
+            <div class="swipe-hint">
+                👉 向右滑动可查看更多日期数据 &nbsp;|&nbsp; 👆 点击日期表头可隐藏/显示对应列 &nbsp;|&nbsp; 👆 单击指标名称折叠/展开该行 &nbsp;|&nbsp; 👆 双击指标名称完全隐藏/显示该行
+            </div>
+        </div>
+
+        <!-- 备注说明 -->
+        <div class="card">
+            <div class="section-title">备注说明</div>
+            <div class="notes">
+                <h4>📝 单位换算说明</h4>
+                <ul>
+                    <li><b>FT3</b>：pg/mL × 1.536 = pmol/L</li>
+                    <li><b>FT4</b>：ng/dL × 12.87 = pmol/L</li>
+                    <li><b>T3</b>：ng/mL × 1.536 = nmol/L</li>
+                    <li><b>T4</b>：μg/dL × 12.87 = nmol/L</li>
+                </ul>
+            </div>
+            <div class="notes" style="margin-top: 15px;">
+                <h4>💊 用药说明</h4>
+                <ul>
+                    <li>术后两日后优甲乐常规剂量为<b>1片/日（50μg）</b></li>
+                    <li>后续调整将根据TSH抑制目标进行</li>
+                    <li>如有剂量变化将另行文字告知</li>
+                </ul>
+            </div>
+            <div class="notes" style="margin-top: 15px;">
+                <h4>🔍 指标名称对应</h4>
+                <ul>
+                    <li>TSH = 促甲状腺激素 = 促甲状腺刺激激素</li>
+                    <li>TgAb = 甲状腺球蛋白抗体 = 抗甲状腺球蛋白抗体</li>
+                    <li>TPOAb = 甲状腺过氧化物酶抗体 = ATPO</li>
+                    <li>FT3 = 游离三碘甲状腺原氨酸</li>
+                    <li>FT4 = 游离甲状腺素</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 文件链接底部 -->
+        <div class="links-card">
+            <h3>📂 文件链接</h3>
+            <a href="/甲状腺检查记录报告.html">📄 当前网页：甲状腺检查记录报告</a>
+            <a href="/">📁 目录列表（所有文件）</a>
+            <a href="/甲状腺功能相关检验检查记录表.xlsx">📊 Excel数据表格下载</a>
+        </div>
+
+        <!-- 底部 -->
+        <div style="text-align: center; padding: 20px; color: white; font-size: 12px; opacity: 0.8;">
+            <p>数据来源：丰人医、瑞金医院、邵逸夫医院</p>
+            <p>报告生成时间：2026年</p>
+        </div>
+    </div>
+
+    <script>
+        // 列隐藏状态管理（单击-折叠模式）
+        const hiddenColumns = new Set();
+        // 列完全隐藏状态管理（双击-完全隐藏模式）
+        const fullyHiddenColumns = new Set();
+
+        function toggleColumn(colIndex) {
+            const table = document.getElementById('biochemistryTable');
+            const headerCell = table.querySelector(`th[data-col-index="${colIndex}"]`);
+
+            // 如果处于完全隐藏模式，先取消完全隐藏
+            if (fullyHiddenColumns.has(colIndex)) {
+                fullyHiddenColumns.delete(colIndex);
+                headerCell.classList.remove('col-fully-hidden');
+            }
+
+            // 切换折叠隐藏状态
+            if (hiddenColumns.has(colIndex)) {
+                hiddenColumns.delete(colIndex);
+                headerCell.classList.remove('hidden-col');
+            } else {
+                hiddenColumns.add(colIndex);
+                headerCell.classList.add('hidden-col');
+            }
+
+            // 更新所有对应列的单元格
+            const cells = table.querySelectorAll(`td[data-col-index="${colIndex}"]`);
+            cells.forEach(cell => {
+                if (hiddenColumns.has(colIndex)) {
+                    cell.classList.add('col-hidden');
+                } else {
+                    cell.classList.remove('col-hidden');
+                }
+            });
+        }
+
+        function toggleColumnFullyHidden(colIndex) {
+            const table = document.getElementById('biochemistryTable');
+            const headerCell = table.querySelector(`th[data-col-index="${colIndex}"]`);
+
+            if (!headerCell) return;
+
+            // 切换完全隐藏状态
+            if (fullyHiddenColumns.has(colIndex)) {
+                fullyHiddenColumns.delete(colIndex);
+                headerCell.classList.remove('col-fully-hidden');
+                // 恢复为折叠状态
+                if (!hiddenColumns.has(colIndex)) {
+                    hiddenColumns.add(colIndex);
+                    headerCell.classList.add('hidden-col');
+                }
+                // 显示该列所有单元格（但保持折叠状态）
+                const cells = table.querySelectorAll(`td[data-col-index="${colIndex}"]`);
+                cells.forEach(cell => {
+                    cell.classList.remove('col-fully-hidden-cell');
+                });
+            } else {
+                fullyHiddenColumns.add(colIndex);
+                headerCell.classList.add('col-fully-hidden');
+                // 移除折叠状态样式
+                headerCell.classList.remove('hidden-col');
+                hiddenColumns.delete(colIndex);
+                // 完全隐藏该列所有单元格
+                const cells = table.querySelectorAll(`td[data-col-index="${colIndex}"]`);
+                cells.forEach(cell => {
+                    cell.classList.remove('col-hidden');
+                    cell.classList.add('col-fully-hidden-cell');
+                });
+            }
+        }
+
+        // 行隐藏状态管理（单击-折叠模式）
+        const hiddenRows = new Set();
+        // 行完全隐藏状态管理（双击-完全隐藏模式）
+        const fullyHiddenRows = new Set();
+
+        function toggleRow(rowIndex) {
+            const table = document.getElementById('biochemistryTable');
+            const rowHeaderCell = table.querySelector(`td[data-row-index="${rowIndex}"]`) || table.querySelector(`td[onclick*="toggleRow(${rowIndex})"]`);
+            const row = table.querySelector(`tr[data-row-index="${rowIndex}"]`);
+            
+            if (!row || !rowHeaderCell) return;
+            
+            // 如果处于完全隐藏模式，先取消完全隐藏
+            if (fullyHiddenRows.has(rowIndex)) {
+                fullyHiddenRows.delete(rowIndex);
+                row.classList.remove('row-fully-hidden');
+            }
+            
+            // 切换折叠隐藏状态
+            if (hiddenRows.has(rowIndex)) {
+                hiddenRows.delete(rowIndex);
+                rowHeaderCell.classList.remove('hidden-row');
+                row.classList.remove('row-hidden');
+            } else {
+                hiddenRows.add(rowIndex);
+                rowHeaderCell.classList.add('hidden-row');
+                row.classList.add('row-hidden');
+            }
+        }
+
+        function toggleRowFullyHidden(rowIndex) {
+            const table = document.getElementById('biochemistryTable');
+            const rowHeaderCell = table.querySelector(`td[data-row-index="${rowIndex}"]`) || table.querySelector(`td[onclick*="toggleRow(${rowIndex})"]`);
+            const row = table.querySelector(`tr[data-row-index="${rowIndex}"]`);
+            
+            if (!row || !rowHeaderCell) return;
+            
+            // 切换完全隐藏状态
+            if (fullyHiddenRows.has(rowIndex)) {
+                fullyHiddenRows.delete(rowIndex);
+                row.classList.remove('row-fully-hidden');
+                // 恢复为折叠状态
+                if (!hiddenRows.has(rowIndex)) {
+                    hiddenRows.add(rowIndex);
+                    rowHeaderCell.classList.add('hidden-row');
+                    row.classList.add('row-hidden');
+                }
+            } else {
+                fullyHiddenRows.add(rowIndex);
+                row.classList.add('row-fully-hidden');
+                // 移除折叠状态样式
+                rowHeaderCell.classList.remove('hidden-row');
+                row.classList.remove('row-hidden');
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为列表头添加提示和双击事件
+            const toggleHeaders = document.querySelectorAll('.toggle-column');
+            toggleHeaders.forEach((header, index) => {
+                header.title = '单击折叠/展开该列，双击完全隐藏/显示该列';
+                // 添加双击事件
+                header.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    // 从data-col-index属性中提取colIndex
+                    const colIndex = parseInt(header.getAttribute('data-col-index'));
+                    toggleColumnFullyHidden(colIndex);
+                });
+            });
+
+            // 为行首单元格添加提示和双击事件
+            const toggleRows = document.querySelectorAll('.toggle-row');
+            toggleRows.forEach((cell, index) => {
+                cell.title = '单击折叠/展开该行，双击完全隐藏/显示该行';
+                // 添加双击事件
+                cell.addEventListener('dblclick', function(e) {
+                    e.preventDefault();
+                    // 从onclick属性中提取rowIndex
+                    const onclickAttr = cell.getAttribute('onclick');
+                    const match = onclickAttr.match(/toggleRow\((\d+)\)/);
+                    if (match) {
+                        const rowIndex = parseInt(match[1]);
+                        toggleRowFullyHidden(rowIndex);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

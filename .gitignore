@@ -1,0 +1,6 @@
+*.py
+server.log
+thyroid_report_tool/
+.codebuddy/
+__pycache__/
+*.pyc
